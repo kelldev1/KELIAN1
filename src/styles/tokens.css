@@ -1,0 +1,97 @@
+/* Design tokens : toutes les couleurs et tailles passent par ces variables,
+   pour changer l'identité visuelle à un seul endroit. */
+:root {
+  --color-cobalt: #0039b3;
+  --color-paper: #f4f6f2;
+  --color-ink: #0a0a0a;
+
+  --font-display: 'Anton', 'Impact', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+  --font-body: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  --border: 2px solid currentColor;
+  --space-s: 0.5rem;
+  --space-m: 1rem;
+  --space-l: 2rem;
+
+  /* clamp : le titre grandit avec l'écran sans media query (mobile-first). */
+  --text-giant: clamp(3.5rem, 14vw, 13rem);
+}
+
+/* Thèmes : --bg (fond) et --fg (texte et traits) changent à chaque chapitre.
+   Le thème est posé par HomePage sur <html data-theme="...">. */
+:root,
+:root[data-theme='cobalt'] {
+  --bg: var(--color-cobalt);
+  --fg: var(--color-paper);
+}
+:root[data-theme='paper'] {
+  --bg: var(--color-paper);
+  --fg: var(--color-cobalt);
+}
+:root[data-theme='ink'] {
+  --bg: var(--color-ink);
+  --fg: var(--color-paper);
+}
+
+/* Couleurs du dessin (trait de la skyline et main), séparées du texte :
+   par défaut elles suivent le thème ; un thème peut les remplacer. */
+:root {
+  --trace: var(--fg); /* trait et lignes de la main */
+  --trace-edge: var(
+    --bg
+  ); /* fin contour autour du trait, pour qu'il reste net sur l'affiche */
+  --hand-fill: var(--bg); /* intérieur de la main */
+  --hand-ink: var(--trace); /* traits fins de la main */
+}
+
+/* Chapitre "À propos" : l'affiche est grise, blanche et noire. Texte, trait et main en gris :
+   cartouches sombres à texte gris clair, main grise aux traits noirs. */
+:root[data-theme='chrome'] {
+  --bg: #161616;
+  --fg: #c9c9c4;
+  --trace: #c9c9c4;
+  --trace-edge: #111111;
+  --hand-fill: #9b9b96;
+  --hand-ink: #111111;
+}
+
+/* Chapitre "Compétences" : affiche noire, jaune et bleu. */
+:root[data-theme='yellow'] {
+  --bg: #0c0c0c;
+  --fg: #f2f0e6;
+  --trace: #f1e84a;
+  --trace-edge: #0c0c0c;
+  --hand-fill: #0c0c0c;
+  --hand-ink: #f1e84a;
+}
+
+/* Chapitre "Projets" : affiche grise, violette et noire. */
+:root[data-theme='violet'] {
+  --bg: #e4e3df;
+  --fg: #5b2fc9;
+  --trace: #5b2fc9;
+  --trace-edge: #e4e3df;
+  --hand-fill: #e4e3df;
+  --hand-ink: #5b2fc9;
+}
+
+/* Chapitre "BTS SIO & veille" : affiche noire aux nuages néon (rose, violet, turquoise). */
+:root[data-theme='neon'] {
+  --bg: #0b0613;
+  --fg: #f1eef6;
+  --trace: #ff35d8;
+  --trace-edge: #0b0613;
+  --hand-fill: #0b0613;
+  --hand-ink: #ff35d8;
+}
+
+/* Chapitre "Contact" : affiche noire et mauve. */
+:root[data-theme='mauve'] {
+  --bg: #140b1d;
+  --fg: #c9a7f5;
+  --trace: #c9a7f5;
+  --trace-edge: #140b1d;
+  --hand-fill: #140b1d;
+  --hand-ink: #c9a7f5;
+}

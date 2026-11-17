@@ -1,0 +1,292 @@
+/* Le <dialog> couvre toute la page et floute ce qui est derrière : on ne voit plus l'affiche, on peut lire. */
+.panel {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: var(--space-l);
+  border: 0;
+  color: var(--fg);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: blur(40px);
+  backdrop-filter: blur(40px);
+}
+
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  margin: 0;
+  font-weight: 400;
+}
+
+.close {
+  cursor: pointer;
+  font-family: var(--font-display);
+  text-transform: uppercase;
+}
+
+.body {
+  overflow-y: auto;
+}
+
+/* Variantes avec texte : un espace entre "Fermer" et la croix. */
+.closeIcon {
+  margin-left: 0.4em;
+}
+
+/* ---------- Variante "sheet" : feuille bordée, étiquette et bouton qui dépassent des coins. ---------- */
+[data-variant='sheet'] .card {
+  display: flex;
+  flex-direction: column;
+  border: 6px solid var(--fg);
+  background: var(--bg);
+  box-shadow: 12px 12px 0 var(--fg);
+}
+
+[data-variant='sheet'] .title {
+  position: absolute;
+  top: -1.4rem;
+  left: 1.5rem;
+  padding: 0.2rem 1rem;
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+  transform: rotate(-2deg);
+}
+
+[data-variant='sheet'] .close {
+  position: absolute;
+  top: -1.75rem;
+  right: -1rem;
+  z-index: 1;
+  padding: 0.4rem 1rem;
+  border: 6px solid var(--fg);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 1.5rem;
+  transform: rotate(3deg);
+}
+
+[data-variant='sheet'] .close:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+[data-variant='sheet'] .body {
+  flex: 1;
+  padding: var(--space-xl, 3rem) var(--space-m) var(--space-m);
+}
+
+/* ---------- Variante "poster" : pas de carte, le contenu flotte sur le flou. ---------- */
+[data-variant='poster'] .title {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 7rem);
+  line-height: 0.85;
+  text-transform: uppercase;
+  writing-mode: vertical-rl;
+  color: transparent;
+  -webkit-text-stroke: 3px var(--fg);
+  pointer-events: none;
+}
+
+/* Le texte "Fermer" reste pour les lecteurs d'écran, mais n'est plus visible. */
+[data-variant='poster'] .closeLabel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Gros carré en haut à droite : une croix géante, ombre dure, qui s'enfonce au clic. */
+[data-variant='poster'] .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: clamp(3.5rem, 7vw, 5rem);
+  height: clamp(3.5rem, 7vw, 5rem);
+  padding: 0;
+  border: 6px solid var(--fg);
+  background: var(--fg);
+  color: var(--bg);
+  box-shadow: 6px 6px 0 var(--bg);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    background-color 0.15s,
+    color 0.15s;
+}
+
+[data-variant='poster'] .closeIcon {
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  line-height: 1;
+  transition: transform 0.25s;
+}
+
+/* Au survol : couleurs inversées, la croix fait un quart de tour. */
+[data-variant='poster'] .close:hover,
+[data-variant='poster'] .close:focus-visible {
+  background: var(--bg);
+  color: var(--fg);
+  box-shadow: 6px 6px 0 var(--fg);
+}
+
+[data-variant='poster'] .close:hover .closeIcon,
+[data-variant='poster'] .close:focus-visible .closeIcon {
+  transform: rotate(90deg);
+}
+
+[data-variant='poster'] .close:active {
+  transform: translate(6px, 6px);
+  box-shadow: 0 0 0 var(--fg);
+}
+
+/* Pleine page : plus de marge autour du panneau, le contenu s'étend jusqu'aux bords. */
+.panel[data-variant='poster'] {
+  padding: var(--space-s);
+}
+
+/* Le titre vertical est retiré de l'affichage ; le panneau garde son nom accessible (aria-label du <dialog>). */
+[data-variant='poster'] .title {
+  display: none;
+}
+
+[data-variant='poster'] .body {
+  height: 100%;
+  padding: 0 var(--space-s);
+}
+
+/* ---------- Variante "split" : colonne d'étiquette inversée à gauche, contenu à droite. ---------- */
+[data-variant='split'] .card {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  border: 6px solid var(--fg);
+  background: var(--bg);
+}
+
+[data-variant='split'] .title {
+  padding: var(--space-m);
+  background: var(--fg);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vw, 5rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+[data-variant='split'] .close {
+  padding: var(--space-s) var(--space-m);
+  border: 0;
+  border-top: 6px solid var(--bg);
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 1.5rem;
+  text-align: left;
+}
+
+[data-variant='split'] .close:hover {
+  background: var(--bg);
+  color: var(--fg);
+}
+
+[data-variant='split'] .body {
+  min-height: 0;
+  padding: var(--space-m);
+}
+
+/* ---------- Variante "folder" : onglets de dossier et piles de feuilles derrière. ---------- */
+[data-variant='folder'] .card {
+  display: flex;
+  flex-direction: column;
+  margin-top: 2.5rem;
+  height: calc(100% - 2.5rem);
+  border: 6px solid var(--fg);
+  background: var(--bg);
+  box-shadow:
+    10px 10px 0 var(--bg),
+    10px 10px 0 6px var(--fg),
+    20px 20px 0 var(--bg),
+    20px 20px 0 6px var(--fg);
+}
+
+[data-variant='folder'] .title,
+[data-variant='folder'] .close {
+  position: absolute;
+  top: calc(-2.5rem - 6px);
+  height: 2.5rem;
+  padding: 0 var(--space-m);
+  border: 6px solid var(--fg);
+  border-bottom: 0;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 2.2rem;
+  text-transform: uppercase;
+}
+
+[data-variant='folder'] .title {
+  left: -6px;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+[data-variant='folder'] .close {
+  right: -6px;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+[data-variant='folder'] .close:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+[data-variant='folder'] .body {
+  flex: 1;
+  padding: var(--space-m);
+}
+
+@media (min-width: 48rem) {
+  [data-variant='split'] .card {
+    grid-template-columns: 18rem 1fr;
+    grid-template-rows: 1fr auto;
+  }
+
+  [data-variant='split'] .title {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  [data-variant='split'] .close {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  [data-variant='split'] .body {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    padding: var(--space-l);
+    border-left: 6px solid var(--fg);
+  }
+}

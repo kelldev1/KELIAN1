@@ -1,0 +1,18 @@
+.frame {
+  position: relative;
+  padding: var(--space-l) var(--space-m) var(--space-m);
+  border: var(--border);
+}
+
+.label {
+  position: absolute;
+  top: 0;
+  left: var(--space-m);
+  transform: translateY(-50%);
+  padding: 0 var(--space-s);
+  background: var(--bg); /* masque la bordure derrière l'étiquette */
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}

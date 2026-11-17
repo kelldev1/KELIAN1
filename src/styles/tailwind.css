@@ -1,0 +1,26 @@
+/* Tailwind SANS sa remise à zéro globale ("preflight") : on charge seulement le thème et les utilitaires,
+   pour ne rien changer au reste du site (écrit en CSS Modules). */
+@layer theme, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Le mode "dark" du composant suit le thème sombre du chapitre (ink), pas le réglage du système. */
+@custom-variant dark (:where([data-theme='ink'] &));
+
+/* Pont entre les noms que le composant attend (style shadcn) et nos variables de thème (--bg / --fg). */
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --color-card: var(--bg);
+  --color-card-foreground: var(--fg);
+  --color-border: color-mix(in oklab, var(--fg) 45%, transparent);
+  --color-muted: color-mix(in oklab, var(--fg) 12%, var(--bg));
+  --color-muted-foreground: color-mix(in oklab, var(--fg) 68%, var(--bg));
+  --color-ring: var(--fg);
+  /* Couleurs des anneaux d'assiette (niveaux 1 à 5). */
+  --color-chart-1: #f1e84a;
+  --color-chart-2: #ff35d8;
+  --color-chart-3: #35c9ff;
+  --color-chart-4: #7cff6b;
+  --color-chart-5: #ff7a1a;
+}

@@ -1,0 +1,14 @@
+.silhouette {
+  fill: var(--hand-fill);
+  fill-rule: evenodd;
+}
+
+.ink {
+  fill: var(--hand-ink);
+  fill-rule: evenodd;
+}
+
+/* Même contour fin que le trait de la skyline. */
+.ink {
+  filter: drop-shadow(0 0 1px var(--trace-edge));
+}

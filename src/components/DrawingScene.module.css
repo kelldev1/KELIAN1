@@ -1,0 +1,16 @@
+.svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible; /* la main dépasse du cadre quand le trait arrive au bord */
+}
+
+.line {
+  fill: none;
+  stroke: var(--trace);
+  stroke-width: 9;
+  stroke-linejoin: miter; /* angles vifs, pas arrondis : brutalisme */
+  /* Contour dur (4 ombres décalées, sans flou) : le trait se détache de n'importe quelle affiche. */
+  filter: drop-shadow(3px 0 0 var(--trace-edge)) drop-shadow(-3px 0 0 var(--trace-edge))
+    drop-shadow(0 3px 0 var(--trace-edge)) drop-shadow(0 -3px 0 var(--trace-edge));
+}
