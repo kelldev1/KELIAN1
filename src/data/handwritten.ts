@@ -1,7 +1,6 @@
-import { competences, realisations } from './btsSio'
 import { email } from './contact'
 import { skills } from './skills'
-import { veilleSubject } from './veille'
+import { veilleItems, veilleSubject } from './veille'
 
 // Textes écrits à la main sur chaque écran (un tableau = un paragraphe).
 // Ils sont déduits des autres fichiers de data : modifier la source suffit.
@@ -18,10 +17,9 @@ export const competencesLines: string[] = skills.map(
   (skill) => `${skill.name} : ${skill.levelLabel.split(' — ')[0]}.`,
 )
 
-export const btsSioLines: string[] = [
-  `Bloc 1 : ${realisations.length} réalisations pour ${competences.length} compétences.`,
-  `${realisations.map((r) => r.name).join(', ')}.`,
+export const veilleLines: string[] = [
   `Veille : ${veilleSubject.title}.`,
+  ...veilleItems.map((item) => `${item.kicker}. ${item.title}.`),
 ]
 
 export const contactLines: string[] = [

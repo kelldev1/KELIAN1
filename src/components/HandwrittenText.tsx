@@ -71,9 +71,9 @@ function layout(paragraphs: string[]) {
   return { pieces, height: y }
 }
 
-type Props = { paragraphs: string[]; active: boolean; pen: PenMove; links?: { label: string; url: string }[] }
+type Props = { paragraphs: string[]; active: boolean; pen: PenMove; links?: { label: string; url: string }[]; maxHeight?: string }
 
-function HandwrittenText({ paragraphs, active, pen, links }: Props) {
+function HandwrittenText({ paragraphs, active, pen, links, maxHeight }: Props) {
   const { pieces, height } = useMemo(() => layout(paragraphs), [paragraphs])
   const pathRefs = useRef<(SVGPathElement | null)[]>([])
   const svgRef = useRef<SVGSVGElement | null>(null)
@@ -131,6 +131,7 @@ function HandwrittenText({ paragraphs, active, pen, links }: Props) {
     <>
     <svg
       ref={svgRef}
+      style={maxHeight ? { maxHeight } : undefined}
       className={styles.svg}
       viewBox={`-10 -10 ${MAX_WIDTH + 140} ${height + 60}`}
       role="img"

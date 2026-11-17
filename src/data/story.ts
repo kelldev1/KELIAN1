@@ -52,7 +52,7 @@ export const storySlides: StorySlide[] = [
     background: POSTER_NEON,
     kicker: 'BTS SIO & veille',
     title: 'Preuves et veille.',
-    text: 'Les six compétences du Bloc 1 et ma veille sur les agents IA et le protocole MCP.',
+    text: "Le tableau de synthèse du Bloc 1 et ma veille sur l'IA dans les systèmes embarqués.",
   },
   {
     id: 'contact',

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import HandwrittenText from '../components/HandwrittenText'
 import { aboutParagraphs } from '../data/about'
-import { btsSioLines, competencesLines, contactLines, parcoursLines } from '../data/handwritten'
+import { veilleLines, competencesLines, contactLines, parcoursLines } from '../data/handwritten'
+import { sources } from '../data/veille'
+import SynthesisTable from '../components/SynthesisTable'
 import { email, socialLinks } from '../data/contact'
 import HorizontalStory from '../components/HorizontalStory'
 import Navbar from '../components/Navbar'
@@ -32,7 +34,18 @@ function HomePage() {
             'a-propos': (active, pen) => <HandwrittenText paragraphs={aboutParagraphs} active={active} pen={pen} />,
             parcours: (active, pen) => <HandwrittenText paragraphs={parcoursLines} active={active} pen={pen} />,
             competences: (active, pen) => <HandwrittenText paragraphs={competencesLines} active={active} pen={pen} />,
-            'bts-sio': (active, pen) => <HandwrittenText paragraphs={btsSioLines} active={active} pen={pen} />,
+            'bts-sio': (active, pen) => (
+              <>
+                <SynthesisTable />
+                <HandwrittenText
+                  paragraphs={veilleLines}
+                  active={active}
+                  pen={pen}
+                  maxHeight="34vh"
+                  links={sources.map((s) => ({ label: s.label, url: s.url }))}
+                />
+              </>
+            ),
             contact: (active, pen) => (
               <HandwrittenText
                 paragraphs={contactLines}

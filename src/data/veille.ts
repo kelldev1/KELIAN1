@@ -1,54 +1,49 @@
 import type { Source, VeilleItem } from '../types/content'
 
 export const veilleSubject = {
-  title: 'Les agents IA outillés et le protocole MCP',
-  goal: 'Comprendre comment intégrer des agents IA dans une application web.',
+  title: "L'IA dans les systèmes embarqués",
+  goal: "Comprendre comment faire tourner un modèle d'intelligence artificielle sur un microcontrôleur.",
   method:
-    'Documentation officielle, expérimentation, projets personnels connectés à des LLMs.',
+    'Documentation officielle des fabricants et des bibliothèques (Google LiteRT, STMicroelectronics), en lien avec mon BTS Systèmes Embarqués.',
 }
 
 export const veilleItems: VeilleItem[] = [
   {
     kicker: '01',
-    title: "Un standard pour brancher l'IA",
-    text: 'MCP standardise la connexion entre un agent IA et des outils, données ou APIs externes.',
+    title: "Un modèle d'IA sur microcontrôleur",
+    text: "LiteRT for Microcontrollers exécute des modèles de machine learning sur des microcontrôleurs, notamment à base d'Arm Cortex-M, et a été porté sur d'autres architectures dont l'ESP32.",
   },
   {
     kicker: '02',
-    title: 'Des agents réutilisables',
-    text: "L'AI SDK TypeScript permet de construire des agents réutilisables dans Next.js et Node.js.",
+    title: 'Des contraintes fortes',
+    text: "La bibliothèque est écrite en C++17 pour une plateforme 32 bits, avec une mémoire gérée à la main, un sous-ensemble d'opérations TensorFlow et sans entraînement sur l'appareil.",
   },
   {
     kicker: '03',
-    title: "Le framework parle à l'assistant",
-    text: 'Les frameworks exposent de plus en plus de contexte aux assistants pour aider au débogage.',
+    title: 'Les outils des fabricants',
+    text: "Chez STMicroelectronics, X-CUBE-AI convertit un modèle déjà entraîné en code C optimisé, intégré au projet STM32. Il est remplacé par STM32Cube AI Studio (formats Keras, TFLite, ONNX).",
   },
   {
     kicker: '04',
-    title: "La sécurité d'abord",
-    text: 'La sécurité reste centrale : validation des entrées, permissions limitées, supervision humaine.',
+    title: 'Du code optimisé pour la puce',
+    text: "Des noyaux optimisés, comme ceux basés sur CMSIS-NN, se choisissent à la compilation pour accélérer l'inférence sur Cortex-M.",
   },
 ]
 
 export const sources: Source[] = [
   {
-    label: 'modelcontextprotocol.io',
-    url: 'https://modelcontextprotocol.io',
-    description: 'Spécification officielle du protocole MCP',
+    label: 'developers.google.com/edge/litert/microcontrollers',
+    url: 'https://developers.google.com/edge/litert/microcontrollers/overview',
+    description: 'LiteRT for Microcontrollers : documentation officielle de Google',
   },
   {
-    label: 'docs.anthropic.com',
-    url: 'https://docs.anthropic.com',
-    description: "Documentation de l'API Claude et des outils",
+    label: 'github.com/tensorflow/tflite-micro',
+    url: 'https://github.com/tensorflow/tflite-micro',
+    description: 'Dépôt officiel du code de la bibliothèque',
   },
   {
-    label: 'ai-sdk.dev',
-    url: 'https://ai-sdk.dev',
-    description: 'AI SDK TypeScript : agents et appels d’outils',
-  },
-  {
-    label: 'nextjs.org',
-    url: 'https://nextjs.org',
-    description: 'Documentation du framework Next.js',
+    label: 'wiki.st.com : X-CUBE-AI',
+    url: 'https://wiki.st.com/stm32mcu/wiki/AI:X-CUBE-AI_documentation',
+    description: 'Documentation officielle de STMicroelectronics (STM32 et IA)',
   },
 ]
