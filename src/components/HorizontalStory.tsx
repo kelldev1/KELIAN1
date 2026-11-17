@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import type { StorySlide } from '../types/chapter'
 import { SCREEN_WIDTH } from '../data/skyline'
@@ -9,17 +10,21 @@ import Panel from './Panel'
 import type { PanelConfig } from './Panel'
 import styles from './HorizontalStory.module.css'
 
+// Déplace la main du bas au point d'écran donné (null = elle retourne au trait de la skyline).
+export type PenMove = (point: { x: number; y: number } | null) => void
+
 type HorizontalStoryProps = {
   slides: StorySlide[]
   onActiveChange: (index: number) => void
   // Contenu détaillé par id de chapitre : s'il existe, un bouton ouvre le panneau plein écran.
   panels?: Record<string, PanelConfig>
+  drawn?: Record<string, (active: boolean, pen: PenMove) => ReactNode>
 }
 
 // Où se trouve le crayon dans l'écran (65 % depuis la gauche) : la caméra le suit vers la droite.
 const PENCIL_SCREEN_RATIO = 0.65
 
-function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStoryProps) {
+function HorizontalStory({ slides, onActiveChange, panels = {}, drawn }: HorizontalStoryProps) {
   const [openPanelId, setOpenPanelId] = useState<string | null>(null)
   const worldRef = useRef<HTMLDivElement>(null)
   const pathRef = useRef<SVGPathElement>(null)
@@ -33,7 +38,8 @@ function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStor
   // useMemo : un tableau stable évite de recréer les écouteurs d'événements à chaque rendu.
   const ids = useMemo(() => slides.map((slide) => slide.id), [slides])
 
-  const draw = useSkylineDrawing(pathRef, handRef)
+  const handBusyRef = useRef(false)
+  const draw = useSkylineDrawing(pathRef, handRef, handBusyRef)
 
   const render = useCallback(() => {
     const { position, intro } = state.current
@@ -42,6 +48,23 @@ function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStor
       gsap.set(worldRef.current, { xPercent: -(position / count) * 100 })
     draw((position + PENCIL_SCREEN_RATIO) * SCREEN_WIDTH * intro)
   }, [count, draw])
+
+  const pen = useCallback<PenMove>(
+    (point) => {
+      const hand = handRef.current
+      if (!point) {
+        handBusyRef.current = false
+        render()
+        return
+      }
+      const ctm = hand?.ownerSVGElement?.getScreenCTM()
+      if (!hand || !ctm) return
+      handBusyRef.current = true
+      const p = new DOMPoint(point.x, point.y).matrixTransform(ctm.inverse())
+      hand.setAttribute('transform', `translate(${p.x} ${p.y})`)
+    },
+    [render],
+  )
 
   const { activeIndex, goTo } = useHorizontalNavigation({
     ids,
@@ -59,7 +82,7 @@ function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStor
   // Images de fond uniques (plusieurs chapitres peuvent partager la même) : un fondu entre deux
   // chapitres qui ont la même image ne ferait que la faire "cligner".
   const backgrounds = useMemo(
-    () => [...new Set(slides.map((slide) => slide.background))],
+    () => [...new Set(slides.map((slide) => slide.background))].filter(Boolean),
     [slides],
   )
   const activeBackground = slides[activeIndex]?.background
@@ -120,6 +143,9 @@ function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStor
               </h2>
             )}
             {/* Cartouche plein, sous la ligne de texte de l'affiche : lisible sur n'importe quel fond. */}
+            {drawn?.[slide.id] ? (
+              drawn[slide.id]!(index === activeIndex, pen)
+            ) : (
             <div className={styles.note}>
               <p className={styles.text}>{slide.text}</p>
               {slide.link && (
@@ -137,6 +163,7 @@ function HorizontalStory({ slides, onActiveChange, panels = {} }: HorizontalStor
                 </button>
               )}
             </div>
+            )}
           </section>
         ))}
       </div>

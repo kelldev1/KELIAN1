@@ -3,13 +3,13 @@ import { email } from './contact'
 
 // Un écran par chapitre, dans le même ordre que chapters.ts
 // (la navbar, les thèmes et les ancres en dépendent).
-const POSTER_BLUE = '/images/background-debut.webp'
-const POSTER_CHROME = '/images/background-a-propos.webp'
-const POSTER_YELLOW = '/images/background-competences.webp'
-const POSTER_VIOLET = '/images/background-projets.webp'
-const POSTER_NEON = '/images/background-bts-sio.webp'
-const POSTER_MAUVE = '/images/background-contact.webp'
-const POSTER_ART = '/images/background-parcours.webp'
+const POSTER_BLUE = ''
+const POSTER_CHROME = ''
+const POSTER_YELLOW = ''
+const POSTER_VIOLET = ''
+const POSTER_NEON = ''
+const POSTER_MAUVE = ''
+const POSTER_ART = ''
 
 export const storySlides: StorySlide[] = [
   {

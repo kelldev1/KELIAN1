@@ -7,9 +7,9 @@ import styles from './ParcoursPanel.module.css'
 // puis le lieu, en passant par un index (walkMinutes / km = position dans STEPS).
 type Step = { id: string; name: string; period: string; where: string; detail: string; image?: string; knockout?: boolean }
 
-const GARAC = '/images/logos/garac.png'
-const IPSSI = '/images/logos/ipssi.jpg'
-const JEAN_ROSTAND = '/images/logos/lycee-jean-rostand.jpg'
+const GARAC = ''
+const IPSSI = ''
+const JEAN_ROSTAND = ''
 
 const ORIGIN = { name: 'Bac Pro Mécanique', period: '2019 – 2022', where: 'Lycée Jean Rostand', detail: 'Mécanique générale, à Mantes-la-Jolie' }
 

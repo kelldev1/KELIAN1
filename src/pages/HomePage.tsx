@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import AboutPanel from '../components/AboutPanel'
+import HandwrittenText from '../components/HandwrittenText'
+import { aboutParagraphs } from '../data/about'
+import { btsSioLines, competencesLines, contactLines, parcoursLines } from '../data/handwritten'
+import { email, socialLinks } from '../data/contact'
 import HorizontalStory from '../components/HorizontalStory'
 import Navbar from '../components/Navbar'
 import { chapters } from '../data/chapters'
 import { storySlides } from '../data/story'
-import ParcoursPanel from '../components/ParcoursPanel'
-import CompetencesPanel from '../components/CompetencesPanel'
 import ProjectsShowcase from '../components/ProjectsShowcase'
-import BtsSioPanel from '../components/BtsSioPanel'
 
 function HomePage() {
   const [activeIndex, setActiveIndex] = useState(0)
@@ -28,12 +28,22 @@ function HomePage() {
         <HorizontalStory
           slides={storySlides}
           onActiveChange={setActiveIndex}
+          drawn={{
+            'a-propos': (active, pen) => <HandwrittenText paragraphs={aboutParagraphs} active={active} pen={pen} />,
+            parcours: (active, pen) => <HandwrittenText paragraphs={parcoursLines} active={active} pen={pen} />,
+            competences: (active, pen) => <HandwrittenText paragraphs={competencesLines} active={active} pen={pen} />,
+            'bts-sio': (active, pen) => <HandwrittenText paragraphs={btsSioLines} active={active} pen={pen} />,
+            contact: (active, pen) => (
+              <HandwrittenText
+                paragraphs={contactLines}
+                active={active}
+                pen={pen}
+                links={[{ label: 'Écrire un mail', url: `mailto:${email}` }, ...socialLinks]}
+              />
+            ),
+          }}
           panels={{
-            'a-propos': { variant: 'poster', content: <AboutPanel /> },
-            parcours: { variant: 'poster', content: <ParcoursPanel /> },
-            competences: { variant: 'poster', content: <CompetencesPanel /> },
             projets: { variant: 'poster', content: <ProjectsShowcase /> },
-            'bts-sio': { variant: 'poster', content: <BtsSioPanel /> },
           }}
         />
       </main>

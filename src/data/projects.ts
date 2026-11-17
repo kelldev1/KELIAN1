@@ -13,10 +13,6 @@ export const projects: Project[] = [
     technologies: ['PHP (MVC)', 'MySQL (PDO)', 'HTML5', 'CSS3', 'JavaScript'],
     takeaway:
       "Ma première architecture MVC de bout en bout : comprendre pourquoi séparer modèle, vue et contrôleur évite le code spaghetti dès qu'un projet dépasse quelques pages.",
-    image: {
-      src: '/images/work/eboutique.jpg',
-      alt: "Capture de la démo vidéo de l'application e-commerce eBoutique",
-    },
     links: [
       {
         label: 'Voir le site',
@@ -38,10 +34,6 @@ export const projects: Project[] = [
     technologies: ['PHP 8', 'MySQL (PDO)', 'HTML5', 'CSS3', 'JavaScript'],
     takeaway:
       'Construire une architecture MVC sans framework oblige à comprendre chaque brique (routage, vues, accès BDD) au lieu de la subir. Ça a rendu React et Express plus lisibles ensuite.',
-    image: {
-      src: '/images/work/devmah.jpg',
-      alt: "Page d'accueil du blog devmah : filtres par catégorie, recherche et liste d'articles",
-    },
     links: [{ label: 'Voir le code', url: 'https://github.com/kelldev1/BLOG-DEV1' }],
   },
   {
@@ -62,10 +54,6 @@ export const projects: Project[] = [
     ],
     takeaway:
       "Mon premier vrai contact avec Vue et Quasar en entreprise : découvrir un écosystème différent de React m'a montré ce qui est propre à un framework et ce qui relève des concepts front en général.",
-    image: {
-      src: '/images/work/quasar-connexion.jpg',
-      alt: "Page de connexion de l'espace utilisateur Quasar : carte centrée avec champs identifiant et mot de passe",
-    },
     links: [
       { label: 'Voir le site', url: 'https://egomania1.github.io/quasar-connexion/' },
       { label: 'Voir le code', url: 'https://github.com/egomania1/quasar-connexion' },
@@ -90,10 +78,6 @@ export const projects: Project[] = [
     ],
     takeaway:
       "Intégrer une IA proprement, c'est surtout de l'architecture : la clé d'API reste côté serveur derrière une Edge Function, et chaque table est protégée par des règles de sécurité au niveau des lignes (RLS) plutôt que par le front.",
-    image: {
-      src: '/images/work/reiim.jpg',
-      alt: 'Tableau de bord de reiim : compteurs de devoirs, graphique par semaine et calendrier du mois',
-    },
     links: [
       { label: 'Voir le site', url: 'https://reiim.vercel.app/' },
       { label: 'Voir le code', url: 'https://github.com/egomania1/reiim' },

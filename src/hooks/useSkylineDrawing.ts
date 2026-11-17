@@ -8,6 +8,8 @@ type Sample = { length: number; maxX: number; x: number; y: number }
 export function useSkylineDrawing(
   pathRef: RefObject<SVGPathElement | null>,
   handRef: RefObject<SVGGElement | null>,
+  // true tant qu'un texte s'écrit : c'est alors lui qui place la main (la même main, pas une deuxième).
+  handBusyRef: RefObject<boolean>,
 ) {
   const samples = useRef<Sample[]>([])
   const totalLength = useRef(0)
@@ -52,8 +54,8 @@ export function useSkylineDrawing(
         strokeDasharray: totalLength.current,
         strokeDashoffset: totalLength.current - tip.length,
       })
-      hand.setAttribute('transform', `translate(${tip.x} ${tip.y})`)
+      if (!handBusyRef.current) hand.setAttribute('transform', `translate(${tip.x} ${tip.y})`)
     },
-    [pathRef, handRef],
+    [pathRef, handRef, handBusyRef],
   )
 }
