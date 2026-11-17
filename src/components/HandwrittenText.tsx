@@ -77,7 +77,7 @@ function HandwrittenText({ paragraphs, active, pen, links }: Props) {
   const { pieces, height } = useMemo(() => layout(paragraphs), [paragraphs])
   const pathRefs = useRef<(SVGPathElement | null)[]>([])
   const svgRef = useRef<SVGSVGElement | null>(null)
-  const startedRef = useRef(false)
+  const doneRef = useRef(false) // le texte a été écrit en entier : on le laisse affiché
 
   useEffect(() => {
     const paths = pathRefs.current.filter((p): p is SVGPathElement => p !== null)
@@ -90,12 +90,11 @@ function HandwrittenText({ paragraphs, active, pen, links }: Props) {
     })
     paths.forEach((p, i) => {
       p.style.strokeDasharray = `${lengths[i]!}`
-      p.style.strokeDashoffset = `${lengths[i]!}`
       // Un trait pas encore commencé reste caché (sinon le bout arrondi laisse un point).
-      p.style.visibility = 'hidden'
+      p.style.strokeDashoffset = doneRef.current ? '0' : `${lengths[i]!}`
+      p.style.visibility = doneRef.current ? 'visible' : 'hidden'
     })
-    if (!active || startedRef.current) return
-    startedRef.current = true
+    if (!active || doneRef.current) return
     const state = { p: 0 }
     const tween = gsap.to(state, {
       p: total,
@@ -118,11 +117,13 @@ function HandwrittenText({ paragraphs, active, pen, links }: Props) {
         if (ctm) pen(new DOMPoint(pt.x, pt.y).matrixTransform(ctm))
       },
       onComplete: () => {
+        doneRef.current = true
         pen(null)
       },
     })
     return () => {
       tween.kill()
+      pen(null)
     }
   }, [active, pen, pieces])
 
