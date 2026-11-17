@@ -35,16 +35,25 @@ function HomePage() {
             parcours: (active, pen) => <HandwrittenText paragraphs={parcoursLines} active={active} pen={pen} />,
             competences: (active, pen) => <HandwrittenText paragraphs={competencesLines} active={active} pen={pen} />,
             'bts-sio': (active, pen) => (
-              <>
-                <SynthesisTable />
-                <HandwrittenText
-                  paragraphs={veilleLines}
-                  active={active}
-                  pen={pen}
-                  maxHeight="34vh"
-                  links={sources.map((s) => ({ label: s.label, url: s.url }))}
-                />
-              </>
+              // Tableau à gauche, veille à droite : les deux tiennent au-dessus des sommets.
+              <div className="bts-row">
+                <div className="bts-gauche">
+                  <SynthesisTable />
+                  <a className="bts-telecharger" href="/documents/tableau-de-synthese-bloc1.pdf" download>
+                    Télécharger le tableau de synthèse (PDF) ↓
+                  </a>
+                  <p className="bts-sources">
+                    {sources.map((s) => (
+                      <a key={s.url} href={s.url}>
+                        {s.label}
+                      </a>
+                    ))}
+                  </p>
+                </div>
+                <div className="bts-veille">
+                  <HandwrittenText paragraphs={veilleLines} active={active} pen={pen} />
+                </div>
+              </div>
             ),
             contact: (active, pen) => (
               <HandwrittenText

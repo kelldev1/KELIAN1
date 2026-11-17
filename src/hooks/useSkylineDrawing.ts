@@ -1,61 +1,75 @@
-import { useCallback, useEffect, useRef, type RefObject } from 'react'
-import gsap from 'gsap'
+import { useCallback, useMemo, type RefObject } from 'react'
+import { SCREEN_WIDTH, buildSkylineTrace } from '../data/skyline'
 
-type Sample = { length: number; maxX: number; x: number; y: number }
+// Où se trouve le crayon dans l'écran au repos (doit rester égal à PENCIL_SCREEN_RATIO de HorizontalStory).
+const PENCIL_REST_X = 0.65 * SCREEN_WIDTH
 
-// Prépare le trait et renvoie une fonction `draw(tipX)` :
-// elle trace le chemin jusqu'à l'abscisse tipX et place la main au bout.
+// Prépare le trait et renvoie une fonction `draw(tipX)`.
+// Le crayon avance le long du trait, dans l'ordre, détail après détail : rien n'apparaît avant d'être dessiné.
+// tipX (la progression de la caméra) est converti en longueur de trait : quand la caméra est posée sur
+// l'écran i, tout le dessin de l'écran i est terminé.
 export function useSkylineDrawing(
   pathRef: RefObject<SVGPathElement | null>,
   handRef: RefObject<SVGGElement | null>,
   // true tant qu'un texte s'écrit : c'est alors lui qui place la main (la même main, pas une deuxième).
   handBusyRef: RefObject<boolean>,
 ) {
-  const samples = useRef<Sample[]>([])
-  const totalLength = useRef(0)
-
-  // On échantillonne le chemin une seule fois : retrouver "où est le crayon" devient une simple recherche.
-  useEffect(() => {
-    const path = pathRef.current
-    if (!path) return
-    const total = path.getTotalLength()
-    const list: Sample[] = []
-    let maxX = 0
-    for (let length = 0; length <= total; length += 4) {
-      const point = path.getPointAtLength(length)
-      maxX = Math.max(maxX, point.x)
-      list.push({ length, maxX, x: point.x, y: point.y })
+  const trace = useMemo(() => {
+    const { points, stops } = buildSkylineTrace()
+    // Longueur cumulée jusqu'à chaque point (un lever de crayon ne compte pas).
+    const lengths: number[] = [0]
+    for (let i = 1; i < points.length; i++) {
+      const p = points[i]!
+      const q = points[i - 1]!
+      lengths.push(lengths[i - 1]! + (p.move ? 0 : Math.hypot(p.x - q.x, p.y - q.y)))
     }
-    samples.current = list
-    totalLength.current = total
-  }, [pathRef])
+    // Repères (position de la caméra -> longueur dessinée) : début, puis chaque fin d'écran.
+    const anchors: Array<[number, number]> = [[0, 0]]
+    stops.forEach((index, screen) => anchors.push([screen * SCREEN_WIDTH + PENCIL_REST_X, lengths[index]!]))
+    return { points, lengths, anchors, total: lengths[lengths.length - 1]! }
+  }, [])
 
   return useCallback(
     (tipX: number) => {
       const path = pathRef.current
       const hand = handRef.current
-      const list = samples.current
-      if (!path || !hand || list.length === 0) return
+      if (!path || !hand) return
+      const { points, lengths, anchors, total } = trace
 
-      // Recherche dichotomique : premier échantillon dont le plus grand x atteint dépasse tipX.
-      let low = 0
-      let high = list.length - 1
-      while (low < high) {
-        const middle = Math.floor((low + high) / 2)
-        if ((list[middle]?.maxX ?? 0) >= tipX) high = middle
-        else low = middle + 1
+      // tipX -> longueur, par interpolation entre deux repères.
+      let length = total
+      for (let i = 1; i < anchors.length; i++) {
+        const [x1, l1] = anchors[i]!
+        if (tipX <= x1) {
+          const [x0, l0] = anchors[i - 1]!
+          length = l0 + ((l1 - l0) * Math.max(0, tipX - x0)) / (x1 - x0 || 1)
+          break
+        }
       }
-      const tip = list[low]
-      if (!tip) return
 
-      // Astuce du "dashoffset" : un trait pointillé dont le tiret est aussi long que le chemin ;
-      // le décaler révèle le chemin petit à petit.
-      gsap.set(path, {
-        strokeDasharray: totalLength.current,
-        strokeDashoffset: totalLength.current - tip.length,
-      })
+      // Dernier point entièrement dessiné (recherche dichotomique), puis le bout du trait en cours.
+      let low = 0
+      let high = lengths.length - 1
+      while (low < high) {
+        const middle = Math.ceil((low + high) / 2)
+        if (lengths[middle]! <= length) low = middle
+        else high = middle - 1
+      }
+      const parts: string[] = []
+      for (let i = 0; i <= low; i++) {
+        const p = points[i]!
+        parts.push(`${p.move ? 'M' : 'L'}${p.x} ${p.y}`)
+      }
+      let tip = points[low]!
+      const next = points[low + 1]
+      if (next && !next.move && length > lengths[low]!) {
+        const t = (length - lengths[low]!) / (lengths[low + 1]! - lengths[low]!)
+        tip = { x: tip.x + (next.x - tip.x) * t, y: tip.y + (next.y - tip.y) * t, move: false }
+        parts.push(`L${tip.x.toFixed(1)} ${tip.y.toFixed(1)}`)
+      }
+      path.setAttribute('d', parts.join(' '))
       if (!handBusyRef.current) hand.setAttribute('transform', `translate(${tip.x} ${tip.y})`)
     },
-    [pathRef, handRef, handBusyRef],
+    [pathRef, handRef, handBusyRef, trace],
   )
 }

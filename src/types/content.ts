@@ -13,7 +13,9 @@ export type Project = {
   role: string
   technologies: string[]
   takeaway: string // "Ce que j'en retiens"
-  image?: { src: string; alt: string }
+  image?: { src: string; alt: string; label?: string } // label : nom de la page dans la galerie (Accueil par défaut)
+  // Autres pages du site, montrées en galerie sous la grande capture.
+  gallery?: { src: string; alt: string; label: string }[]
   links: ExternalLink[]
 }
 

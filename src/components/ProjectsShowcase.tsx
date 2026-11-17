@@ -38,6 +38,8 @@ function ProjectsShowcase() {
   const [prev, setPrev] = useState<number | null>(null)
   const [dir, setDir] = useState<1 | -1>(1)
   const [leaving, setLeaving] = useState(false)
+  // Page de la galerie affichée en grand (-1 = capture principale), retenue pour un projet donné.
+  const [shot, setShot] = useState({ project: 0, n: -1 })
   const indexRef = useRef(0)
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const turbulenceRef = useRef<SVGFETurbulenceElement>(null)
@@ -144,6 +146,8 @@ function ProjectsShowcase() {
   }, [step])
 
   const project = projects[view]
+  const shotN = shot.project === index ? shot.n : -1
+  const gallery = projects[index]?.gallery ?? []
   if (!project) return null
   const url = linkOf(view)
   const years = yearsOf(project.kicker)
@@ -178,6 +182,7 @@ function ProjectsShowcase() {
               style={{ height: `${100 / count}%`, transform: `translateY(${index * 100}%)` }}
             />
           </span>
+          <div className={styles.mediaCol}>
           <a
             className={styles.thumb}
             data-dir={dir}
@@ -192,8 +197,8 @@ function ProjectsShowcase() {
                   key={item.id}
                   className={styles.thumbImage}
                   data-state={i === index ? 'active' : i === prev ? 'prev' : undefined}
-                  src={item.image.src}
-                  alt={i === index ? item.image.alt : ''}
+                  src={i === index && shotN >= 0 ? (gallery[shotN]?.src ?? item.image.src) : item.image.src}
+                  alt={i === index ? (shotN >= 0 ? (gallery[shotN]?.alt ?? item.image.alt) : item.image.alt) : ''}
                   width={640}
                   height={360}
                 />
@@ -204,6 +209,23 @@ function ProjectsShowcase() {
               ),
             )}
           </a>
+          {gallery.length > 0 && (
+            <div className={styles.gallery} aria-label="Pages du site">
+              {[{ label: projects[index]?.image?.label ?? 'Accueil', src: projects[index]?.image?.src ?? '', alt: '' }, ...gallery].map((g, n) => (
+                <button
+                  key={g.src}
+                  type="button"
+                  className={styles.shot}
+                  data-active={shotN === n - 1}
+                  onClick={() => setShot({ project: index, n: n - 1 })}
+                >
+                  <img src={g.src} alt="" width={160} height={90} />
+                  <span>{g.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          </div>
         </div>
 
         {/* Textes : un bloc par projet, recréé à chaque changement pour rejouer l'animation d'entrée. */}
@@ -230,12 +252,21 @@ function ProjectsShowcase() {
               </li>
             ))}
           </ul>
+          {/* Tous les liens du projet : site, documentation, code, démo. */}
+          <p className={styles.links}>
+            {project.links.map((link, n) => (
+              <Line key={link.url} i={8 + n}>
+                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                  {link.label} ↗
+                </a>
+              </Line>
+            ))}
+          </p>
+          <p className={styles.description} data-leaving={leaving || undefined}>
+            {project.description}
+          </p>
         </div>
       </div>
-
-      <p key={`d-${view}`} className={styles.description} data-leaving={leaving || undefined}>
-        {project.description}
-      </p>
 
       <p className={styles.counter} aria-live="polite">
         {String(index + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}

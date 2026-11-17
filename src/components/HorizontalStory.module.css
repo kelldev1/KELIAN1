@@ -23,6 +23,11 @@
   height: 100%;
   /* 5,4vw : même marge gauche que le mot DEVELOPMENT de l'affiche. */
   padding: 4.5rem 5.4vw 0;
+  /* Le contenu reste au-dessus de la ligne d'horizon : le dessin occupe en bas 290/1600 de la largeur. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-bottom: calc(100vw * 290 / 1600 + 1.5rem);
 }
 
 .kicker {

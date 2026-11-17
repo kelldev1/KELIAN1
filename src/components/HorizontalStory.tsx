@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import gsap from 'gsap'
 import type { StorySlide } from '../types/chapter'
-import { SCREEN_WIDTH } from '../data/skyline'
+import { SCREEN_WIDTH, screenShapes } from '../data/skyline'
 import { useHorizontalNavigation } from '../hooks/useHorizontalNavigation'
 import { useSkylineDrawing } from '../hooks/useSkylineDrawing'
 import DrawingScene from './DrawingScene'
@@ -23,6 +23,15 @@ type HorizontalStoryProps = {
 
 // Où se trouve le crayon dans l'écran (65 % depuis la gauche) : la caméra le suit vers la droite.
 const PENCIL_SCREEN_RATIO = 0.65
+
+// Hauteur occupée en bas par le dessin de chaque écran (bas du dessin à y = 520, voir DrawingScene) :
+// le texte s'arrête juste au-dessus.
+const DRAWING_BOTTOM = 520
+function reservedBottom(index: number) {
+  const shape = screenShapes[index]
+  const top = shape ? Math.min(...shape.map(([, y]) => y)) : 230
+  return `calc(100vw * ${DRAWING_BOTTOM - top} / ${SCREEN_WIDTH} + 1.5rem)`
+}
 
 function HorizontalStory({ slides, onActiveChange, panels = {}, drawn }: HorizontalStoryProps) {
   const [openPanelId, setOpenPanelId] = useState<string | null>(null)
@@ -127,6 +136,7 @@ function HorizontalStory({ slides, onActiveChange, panels = {}, drawn }: Horizon
           <section
             key={slide.id}
             className={styles.screen}
+            style={{ paddingBottom: reservedBottom(index) }}
             aria-labelledby={`${slide.id}-titre`}
             // inert : un écran hors champ ne peut ni recevoir le focus clavier ni être lu par erreur.
             inert={index !== activeIndex}

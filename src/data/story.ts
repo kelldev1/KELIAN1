@@ -44,8 +44,8 @@ export const storySlides: StorySlide[] = [
     id: 'projets',
     background: POSTER_VIOLET,
     kicker: 'Projets',
-    title: 'Cinq projets concrets.',
-    text: 'eBoutique, devmah, Quasar, reiim et tracer : du PHP MVC fait maison à une application React avec IA.',
+    title: 'Six projets concrets.',
+    text: 'Kartmania, devmah, Quasar, eBoutique, reiim et tracer : du kart en 3D au PHP MVC fait maison.',
   },
   {
     id: 'bts-sio',

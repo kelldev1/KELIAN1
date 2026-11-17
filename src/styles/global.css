@@ -46,3 +46,72 @@ body {
   height: 100%;
   overflow: hidden;
 }
+
+/* Page BTS SIO : tableau de synthèse et veille côte à côte, dans la place au-dessus du dessin. */
+.bts-row {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  gap: var(--space-m, 1.5rem);
+  align-items: flex-start;
+}
+
+.bts-gauche {
+  flex: 0 0 auto;
+  max-width: 34rem;
+}
+
+.bts-gauche > table {
+  width: auto;
+}
+
+.bts-sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: var(--space-s, 0.75rem) 0 0;
+}
+
+.bts-sources a {
+  width: fit-content;
+  padding: 0.2em 0.6em;
+  border: 1px solid var(--fg);
+  color: var(--fg);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.bts-sources a:hover {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.bts-veille {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bouton de téléchargement du tableau de synthèse (page BTS SIO). */
+.bts-telecharger {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.35em 0.8em;
+  background: var(--fg);
+  color: var(--bg);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.bts-telecharger:hover {
+  background: transparent;
+  color: var(--fg);
+  outline: 1px solid var(--fg);
+}

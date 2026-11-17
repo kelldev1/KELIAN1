@@ -1,9 +1,13 @@
+/* Toute la place libre entre le titre et la ligne d'horizon : le texte s'y ajuste. */
+.box {
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  margin-top: var(--space-s);
+}
+
 .svg {
   display: block;
-  width: min(100%, 56rem);
-  height: auto;
-  max-height: 66vh;
-  margin-top: var(--space-s);
   overflow: visible;
 }
 
@@ -17,6 +21,7 @@
 }
 
 .links {
+  flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-s);

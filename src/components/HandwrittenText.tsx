@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { glyphs, SPACE_WIDTH } from '../data/handwritingGlyphs'
 import type { PenMove } from './HorizontalStory'
@@ -8,7 +8,9 @@ import styles from './HandwrittenText.module.css'
 // La main suit le trait pendant qu'il se dessine. Les accents sont ajoutés à part, la police n'en a pas.
 const SCALE = 1.5
 const ADV = 1.5 // espacement entre lettres (la police en script se chevauche sinon)
-const MAX_WIDTH = 900
+const MIN_WIDTH = 700 // largeur de ligne (unités de police) : on essaie plusieurs largeurs
+const WIDEST = 3400
+const MAX_LINE_PX = 90 // hauteur de ligne maximale à l'écran, pour ne pas écrire en géant
 const LINE_H = 62
 const SPEED = 1000 // unités de trait par seconde
 
@@ -39,14 +41,14 @@ function advance(word: string) {
   return w * SCALE
 }
 
-function layout(paragraphs: string[]) {
+function layout(paragraphs: string[], maxWidth: number) {
   const pieces: Piece[] = []
   let y = 34
   for (const p of paragraphs) {
     let x = 0
     for (const word of p.split(' ')) {
       const wordW = advance(word)
-      if (x > 0 && x + wordW > MAX_WIDTH) {
+      if (x > 0 && x + wordW > maxWidth) {
         x = 0
         y += LINE_H
       }
@@ -68,13 +70,61 @@ function layout(paragraphs: string[]) {
     }
     y += LINE_H * 1.5
   }
-  return { pieces, height: y }
+  return { pieces, height: y, width: maxWidth }
+}
+
+// Plusieurs colonnes (pour les listes courtes) : les paragraphes sont répartis dans l'ordre.
+const COL_GAP = 160
+function layoutColumns(paragraphs: string[], maxWidth: number, cols: number) {
+  const per = Math.ceil(paragraphs.length / cols)
+  const pieces: Piece[] = []
+  let height = 0
+  for (let c = 0; c < cols; c++) {
+    const group = paragraphs.slice(c * per, (c + 1) * per)
+    if (!group.length) continue
+    const l = layout(group, maxWidth)
+    const dx = c * (maxWidth + COL_GAP)
+    for (const piece of l.pieces) pieces.push({ ...piece, x: piece.x + dx })
+    height = Math.max(height, l.height)
+  }
+  return { pieces, height, width: cols * maxWidth + (cols - 1) * COL_GAP }
+}
+
+// Choisit la largeur de ligne et le nombre de colonnes qui donnent le plus gros texte dans la place (w × h pixels).
+function bestLayout(paragraphs: string[], w: number, h: number) {
+  let best = layout(paragraphs, 900)
+  let bestScale = 0
+  const maxCols = Math.min(3, paragraphs.length)
+  for (let cols = 1; cols <= maxCols; cols++) {
+    for (let mw = MIN_WIDTH; mw <= WIDEST / cols; mw += 100) {
+      const l = layoutColumns(paragraphs, mw, cols)
+      const scale = Math.min(w / (l.width + 140), h / (l.height + 60), MAX_LINE_PX / LINE_H)
+      if (scale > bestScale + 0.001) {
+        best = l
+        bestScale = scale
+      }
+    }
+  }
+  return { ...best, scale: bestScale }
 }
 
 type Props = { paragraphs: string[]; active: boolean; pen: PenMove; links?: { label: string; url: string }[]; maxHeight?: string }
 
 function HandwrittenText({ paragraphs, active, pen, links, maxHeight }: Props) {
-  const { pieces, height } = useMemo(() => layout(paragraphs), [paragraphs])
+  const boxRef = useRef<HTMLDivElement | null>(null)
+  const [box, setBox] = useState({ w: 900, h: 400 })
+  useLayoutEffect(() => {
+    const el = boxRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => {
+      const w = Math.round(el.clientWidth)
+      const h = Math.round(el.clientHeight)
+      setBox((b) => (Math.abs(b.w - w) > 8 || Math.abs(b.h - h) > 8 ? { w, h } : b))
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const { pieces, height, width, scale } = useMemo(() => bestLayout(paragraphs, box.w, box.h), [paragraphs, box])
   const pathRefs = useRef<(SVGPathElement | null)[]>([])
   const svgRef = useRef<SVGSVGElement | null>(null)
   const doneRef = useRef(false) // le texte a été écrit en entier : on le laisse affiché
@@ -129,11 +179,14 @@ function HandwrittenText({ paragraphs, active, pen, links, maxHeight }: Props) {
 
   return (
     <>
+    <div ref={boxRef} className={styles.box} style={maxHeight ? { maxHeight } : undefined}>
     <svg
       ref={svgRef}
-      style={maxHeight ? { maxHeight } : undefined}
       className={styles.svg}
-      viewBox={`-10 -10 ${MAX_WIDTH + 140} ${height + 60}`}
+      width={(width + 140) * scale}
+      height={(height + 60) * scale}
+      viewBox={`-10 -10 ${width + 140} ${height + 60}`}
+      preserveAspectRatio="xMinYMin meet"
       role="img"
       aria-label={paragraphs.join(' ')}
     >
@@ -151,6 +204,7 @@ function HandwrittenText({ paragraphs, active, pen, links, maxHeight }: Props) {
         ))}
       </g>
     </svg>
+    </div>
       {links && (
         <p className={styles.links}>
           {links.map((link) => (
