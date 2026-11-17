@@ -104,7 +104,7 @@
   animation: reveal-next 1s cubic-bezier(0.76, 0, 0.24, 1) both;
 }
 
-.thumb[data-dir=-1] .thumbImage[data-state=active] {
+.thumb[data-dir="-1"] .thumbImage[data-state=active] {
   animation-name: reveal-prev;
 }
 
@@ -207,7 +207,7 @@
   --out: -110%;
 }
 
-.info[data-dir=-1] {
+.info[data-dir="-1"] {
   --in: -110%;
   --out: 110%;
 }
